@@ -12,10 +12,9 @@ makedepends=('cargo' 'git')
 # release profile 里已经 strip，再让 makepkg 抽调试符号只会产出一个空的
 # -debug 包，并在打包时报 "No debugging symbols"。
 options=('!debug')
-# 发布走的是与版本同名的孤儿分支（仓库里没有推 tag），所以这里用 branch
-# 而不是 tag。若日后改为推送 tag v$pkgver，换成 #tag=v$pkgver 更稳妥——
-# tag 不会移动，branch 会。
-source=("$pkgname-$pkgver::git+$url.git#branch=v$pkgver")
+# 指向 tag 而非 branch：AUR 要求固定版本包的源码是不可变的，
+# 同一个 pkgver 必须永远构建出同样的内容。branch 会移动，tag 不会。
+source=("$pkgname-$pkgver::git+$url.git#tag=v$pkgver")
 sha256sums=('SKIP')
 
 prepare() {
