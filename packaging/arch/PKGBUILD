@@ -1,0 +1,46 @@
+# Maintainer: Hocking Lee <hockinglee@gmail.com>
+
+pkgname=cmux-tui
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="CMUX (3GPP TS 27.010) serial debugger TUI with dual-channel hex/ASCII view and millisecond timestamps"
+arch=('x86_64' 'aarch64')
+url="https://github.com/hocking-lee/cmux-tui"
+license=('MIT')
+depends=('gcc-libs')
+makedepends=('cargo' 'git')
+# release profile 里已经 strip，再让 makepkg 抽调试符号只会产出一个空的
+# -debug 包，并在打包时报 "No debugging symbols"。
+options=('!debug')
+# 发布走的是与版本同名的孤儿分支（仓库里没有推 tag），所以这里用 branch
+# 而不是 tag。若日后改为推送 tag v$pkgver，换成 #tag=v$pkgver 更稳妥——
+# tag 不会移动，branch 会。
+source=("$pkgname-$pkgver::git+$url.git#branch=v$pkgver")
+sha256sums=('SKIP')
+
+prepare() {
+    cd "$pkgname-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/^host: //p')"
+}
+
+build() {
+    cd "$pkgname-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cargo build --frozen --release
+}
+
+check() {
+    cd "$pkgname-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    # 全部测试都用内存流驱动，不需要真实串口硬件。
+    cargo test --frozen
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    install -Dm0755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+    install -Dm0644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+    install -Dm0644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
