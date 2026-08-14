@@ -1,6 +1,6 @@
 # Arch Linux 打包
 
-`PKGBUILD` 从 GitHub 上的 `v$pkgver` tag 拉取源码构建，产物是链接系统 glibc 的
+`PKGBUILD` 从 GitHub 上的 `$pkgver` tag 拉取源码构建，产物是链接系统 glibc 的
 动态二进制（Arch 打包惯例），依赖只有 `gcc-libs`。
 
 ## 本地构建并安装
@@ -24,7 +24,11 @@ usr/share/licenses/cmux-tui/LICENSE
 ## 发布新版本
 
 1. 改 `Cargo.toml` 的 `version`。
-2. 提交后打 tag：`git tag -a v0.0.2 -m "cmux-tui 0.0.2" && git push --tags`。
+2. 提交后打 tag：`git tag -a 0.0.2 -m "cmux-tui 0.0.2"`，再推送该 tag。
+
+   **tag 名不要加 `v` 前缀。** 发布分支叫 `v0.0.1`，makepkg 检出 tag 时用的是
+   裸 ref 名（不加 `refs/tags/`），仓库里同时存在同名的分支和 tag 会让 git 报
+   `ambiguous object name`，构建直接失败。
 3. 改本目录 `PKGBUILD` 的 `pkgver`，把 `pkgrel` 重置为 `1`。
 4. 重新生成校验信息：`makepkg --printsrcinfo > .SRCINFO`。
 5. 只改打包脚本而源码未变时，不动 `pkgver`，把 `pkgrel` 加一。
