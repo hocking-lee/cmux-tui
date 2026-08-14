@@ -10,7 +10,7 @@ pkgbase = cmux-tui
 	makedepends = git
 	depends = gcc-libs
 	options = !debug
-	source = cmux-tui-0.0.1::git+https://github.com/hocking-lee/cmux-tui.git#tag=v0.0.1
+	source = cmux-tui-0.0.1::git+https://github.com/hocking-lee/cmux-tui.git#tag=0.0.1
 	sha256sums = SKIP
 
 pkgname = cmux-tui
